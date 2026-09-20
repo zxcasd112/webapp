@@ -258,7 +258,10 @@
     try {
       await fetchState();
     } catch (e) {
-      $("emptyState").textContent = "Не удалось загрузить дневник. Открой через бота.";
+      // сервер недоступен (сон бесплатного тарифа, сеть) — работаем локально
+      demo = true;
+      loadLocal();
+      ready = true;
     }
     render();
   }

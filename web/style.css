@@ -175,20 +175,12 @@ body::before {
 .hero-meta span {
   background: rgba(0, 0, 0, 0.6);
   border: 1px solid var(--line);
+  border-radius: 999px;
   padding: 5px 10px;
 }
 
 .hero-meta span:last-child {
   color: var(--accent);
-}
-
-/* neon rainbow beam divider, like the arcs on the RB3 cover */
-.beam {
-  height: 6px;
-  background: var(--rainbow);
-  box-shadow: 0 0 14px rgba(255, 30, 30, 0.7), 0 0 30px rgba(180, 77, 255, 0.35);
-  position: relative;
-  z-index: 1;
 }
 
 .panel {
@@ -197,6 +189,7 @@ body::before {
   margin: 14px 14px;
   background: var(--panel);
   border: 1px solid var(--line);
+  border-radius: 18px;
   padding: 14px;
   box-shadow: 0 0 24px rgba(255, 13, 13, 0.08), inset 0 0 40px rgba(0, 0, 0, 0.6);
 }
@@ -224,6 +217,7 @@ body::before {
   flex: 1;
   background: #0a0404;
   border: 1px solid var(--line);
+  border-radius: 12px;
   color: var(--ink);
   padding: 12px;
   font-size: 15px;
@@ -255,7 +249,7 @@ body::before {
   text-shadow: 1px 1px 0 #000;
   font-size: 22px;
   width: 48px;
-  clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+  border-radius: 12px;
   box-shadow: 0 0 16px rgba(255, 13, 13, 0.5);
 }
 
@@ -271,6 +265,7 @@ body::before {
   cursor: pointer;
   background: rgba(0, 0, 0, 0.6);
   border: 1px solid var(--line);
+  border-radius: 999px;
   color: var(--muted);
   padding: 8px 16px;
   font-size: 13px;
@@ -301,6 +296,7 @@ body::before {
   background: linear-gradient(180deg, rgba(255, 13, 13, 0.05), transparent 60%), var(--panel);
   border: 1px solid var(--line);
   border-left: 4px solid var(--accent);
+  border-radius: 14px;
   margin-bottom: 10px;
   padding: 12px;
   animation: slideIn 0.25s ease;
@@ -329,6 +325,7 @@ body::before {
   height: 24px;
   min-width: 24px;
   border: 2px solid var(--accent);
+  border-radius: 8px;
   background: transparent;
   color: transparent;
   display: flex;
@@ -406,6 +403,7 @@ body::before {
   width: 100%;
   background: #1a0b0b;
   border: 1px solid var(--line);
+  border-radius: 12px;
   color: var(--muted);
   padding: 12px;
   margin-top: 6px;
@@ -431,6 +429,7 @@ body::before {
 .btn-ghost {
   background: none;
   border: 1px solid var(--line);
+  border-radius: 999px;
   color: var(--muted);
   padding: 8px 12px;
   font-size: 11px;
