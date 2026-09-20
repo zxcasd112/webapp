@@ -1,0 +1,13 @@
+name: keepalive
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake Render service
+        run: curl -fsS -m 30 "https://webapp-2-kds9.onrender.com/" -o /dev/null

@@ -7,7 +7,8 @@
 
   let state = {
     profile: { title: "slaughter_lord", sub: "Записывай. Кастомизируй. Побеждай.", label: "задача", accent: "#ff0d0d", mode: "blood" },
-    projects: [], tags: [], tasks: [], habits: [], diary: [], stats: null
+    projects: [], tags: [], tasks: [], habits: [], diary: [],
+    stats: { done_total: 0, open_total: 0, done_today: 0, open_today: 0, pomo_minutes_today: 0, habit_count: 0, today: "" }
   };
   let demoMode = false;
   let currentView = "temple";
@@ -932,8 +933,10 @@
       } catch (e) {}
     }
     bindAll();
-    loadFull();
+    // мгновенный первый рендер, данные подтянутся фоном
+    applyProfile();
     switchView("temple");
+    loadFull();
   }
 
   document.addEventListener("DOMContentLoaded", boot);
