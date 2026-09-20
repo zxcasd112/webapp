@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Дневник Задач</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="grain"></div>
+
+  <header class="hero">
+    <div class="hero-top">
+      <span class="hero-logo">TASK//JOURNAL</span>
+      <span class="hero-edition">ED.2026</span>
+    </div>
+    <h1 class="hero-title" id="appTitle">БОЕВОЙ ДНЕВНИК</h1>
+    <p class="hero-sub" id="appSub">Записывай. Кастомизируй. Побеждай.</p>
+    <div class="hero-meta">
+      <span id="taskCount">0 задач</span>
+      <span id="doneCount">0 выполнено</span>
+    </div>
+  </header>
+
+  <section class="panel">
+    <form id="addForm" class="add-form">
+      <input type="text" id="taskInput" class="task-input" placeholder="Новая задача..." autocomplete="off" maxlength="200">
+      <button type="submit" class="btn btn-add" id="addBtn">+</button>
+    </form>
+  </section>
+
+  <nav class="filters">
+    <button class="chip active" data-filter="all">Все</button>
+    <button class="chip" data-filter="active">Активные</button>
+    <button class="chip" data-filter="done">Выполнено</button>
+  </nav>
+
+  <ul id="taskList" class="task-list"></ul>
+  <p id="emptyState" class="empty">Поле пусто. Вперёд.</p>
+
+  <section class="panel customize">
+    <h2 class="panel-title">НАСТРОЙКИ БОЯ</h2>
+
+    <label class="field">
+      <span>Заголовок</span>
+      <input type="text" id="setTitle" class="task-input" maxlength="30">
+    </label>
+
+    <label class="field">
+      <span>Подзаголовок</span>
+      <input type="text" id="setSub" class="task-input" maxlength="60">
+    </label>
+
+    <label class="field">
+      <span>Метка задачи (ед.ч.)</span>
+      <input type="text" id="setLabel" class="task-input" maxlength="20">
+    </label>
+
+    <label class="field">
+      <span>Акцентный цвет</span>
+      <input type="color" id="setAccent" class="color-input" value="#ff2e2e">
+    </label>
+
+    <div class="field">
+      <span>Режим</span>
+      <div class="mode-row">
+        <button class="chip active" data-mode="blood">КРОВЬ</button>
+        <button class="chip" data-mode="acid">КИСЛОТА</button>
+        <button class="chip" data-mode="void">БЕЗДНА</button>
+      </div>
+    </div>
+
+    <button id="resetBtn" class="btn btn-reset">Сбросить всё</button>
+  </section>
+
+  <footer class="footer">
+    <span>© 2026 TASK//JOURNAL</span>
+    <button id="clearDone" class="btn btn-ghost">Очистить выполненные</button>
+  </footer>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: task-journal
+    runtime: docker
+    plan: free
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: WEBAPP_URL
+        sync: false
