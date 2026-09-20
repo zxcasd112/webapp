@@ -79,26 +79,156 @@ def _resolve_user_id(request: web.Request) -> int | None:
     return None
 
 
-async def api_get_state(request: web.Request) -> web.Response:
-    user_id = _resolve_user_id(request)
-    if user_id is None:
-        return web.json_response({"error": "unauthorized"}, status=401)
-    state = db.get_state(user_id)
-    return web.json_response(state)
+def _require_user(request: web.Request) -> int | web.Response:
+    uid = _resolve_user_id(request)
+    if uid is None:
+        return 401
+    return uid
 
 
-async def api_save_state(request: web.Request) -> web.Response:
-    user_id = _resolve_user_id(request)
-    if user_id is None:
-        return web.json_response({"error": "unauthorized"}, status=401)
+def _int_or_none(v):
     try:
+        return int(v)
+    except (TypeError, ValueError):
+        return None
+
+
+# ---------- generic REST helpers ----------
+
+
+async def api_full(request: web.Request) -> web.Response:
+    uid = _resolve_user_id(request)
+    if uid is None:
+        return web.json_response({"error": "unauthorized"}, status=401)
+    return web.json_response(db.full_state(uid))
+
+
+async def api_profile(request: web.Request) -> web.Response:
+    uid = _resolve_user_id(request)
+    if uid is None:
+        return web.json_response({"error": "unauthorized"}, status=401)
+    if request.method == "POST":
         payload = await request.json()
-    except (json.JSONDecodeError, ValueError):
-        return web.json_response({"error": "bad json"}, status=400)
-    if not isinstance(payload, dict):
-        return web.json_response({"error": "bad payload"}, status=400)
-    db.save_state(user_id, payload)
-    return web.json_response({"ok": True})
+        db.save_profile(uid, payload)
+    return web.json_response(db.get_profile(uid))
+
+
+async def api_projects(request: web.Request) -> web.Response:
+    uid = _resolve_user_id(request)
+    if uid is None:
+        return web.json_response({"error": "unauthorized"}, status=401)
+    if request.method == "POST":
+        payload = await request.json()
+        return web.json_response(db.add_project(uid, payload), status=201)
+    return web.json_response(db.list_projects(uid))
+
+
+async def api_project_item(request: web.Request) -> web.Response:
+    uid = _resolve_user_id(request)
+    if uid is None:
+        return web.json_response({"error": "unauthorized"}, status=401)
+    pid = _int_or_none(request.match_info["pid"])
+    if request.method == "DELETE":
+        ok = db.delete_project(uid, pid)
+        return web.json_response({"ok": ok})
+    payload = await request.json()
+    res = db.update_project(uid, pid, payload)
+    if res is None:
+        return web.json_response({"error": "not found"}, status=404)
+    return web.json_response(res)
+
+
+async def api_tags(request: web.Request) -> web.Response:
+    uid = _resolve_user_id(request)
+    if uid is None:
+        return web.json_response({"error": "unauthorized"}, status=401)
+    if request.method == "POST":
+        payload = await request.json()
+        return web.json_response(db.add_tag(uid, payload.get("name", ""), payload.get("color", "#b44dff")), status=201)
+    return web.json_response(db.list_tags(uid))
+
+
+async def api_tasks(request: web.Request) -> web.Response:
+    uid = _resolve_user_id(request)
+    if uid is None:
+        return web.json_response({"error": "unauthorized"}, status=401)
+    if request.method == "POST":
+        payload = await request.json()
+        return web.json_response(db.add_task(uid, payload), status=201)
+    return web.json_response(db.list_tasks(uid))
+
+
+async def api_task_item(request: web.Request) -> web.Response:
+    uid = _resolve_user_id(request)
+    if uid is None:
+        return web.json_response({"error": "unauthorized"}, status=401)
+    tid = _int_or_none(request.match_info["tid"])
+    if request.method == "DELETE":
+        ok = db.delete_task(uid, tid)
+        return web.json_response({"ok": ok})
+    payload = await request.json()
+    res = db.update_task(uid, tid, payload)
+    if res is None:
+        return web.json_response({"error": "not found"}, status=404)
+    return web.json_response(res)
+
+
+async def api_habits(request: web.Request) -> web.Response:
+    uid = _resolve_user_id(request)
+    if uid is None:
+        return web.json_response({"error": "unauthorized"}, status=401)
+    if request.method == "POST":
+        payload = await request.json()
+        return web.json_response(db.add_habit(uid, payload), status=201)
+    return web.json_response(db.list_habits(uid))
+
+
+async def api_habit_item(request: web.Request) -> web.Response:
+    uid = _resolve_user_id(request)
+    if uid is None:
+        return web.json_response({"error": "unauthorized"}, status=401)
+    hid = _int_or_none(request.match_info["hid"])
+    if request.method == "DELETE":
+        ok = db.delete_habit(uid, hid)
+        return web.json_response({"ok": ok})
+    payload = await request.json()
+    day = payload.get("day")
+    if day:
+        res = db.toggle_habit_day(uid, hid, day)
+        if res is None:
+            return web.json_response({"error": "not found"}, status=404)
+        return web.json_response(res)
+    return web.json_response({"error": "bad payload"}, status=400)
+
+
+async def api_diary(request: web.Request) -> web.Response:
+    uid = _resolve_user_id(request)
+    if uid is None:
+        return web.json_response({"error": "unauthorized"}, status=401)
+    if request.method == "POST":
+        payload = await request.json()
+        day = payload.get("day")
+        if not day:
+            return web.json_response({"error": "day required"}, status=400)
+        res = db.save_diary_day(uid, day, payload.get("text", ""), payload.get("mood"))
+        return web.json_response(res)
+    return web.json_response(db.list_diary(uid))
+
+
+async def api_pomo(request: web.Request) -> web.Response:
+    uid = _resolve_user_id(request)
+    if uid is None:
+        return web.json_response({"error": "unauthorized"}, status=401)
+    payload = await request.json()
+    res = db.add_pomo(uid, payload.get("task_id"), int(payload.get("minutes", 25)), payload.get("completed", True))
+    return web.json_response(res, status=201)
+
+
+async def api_stats(request: web.Request) -> web.Response:
+    uid = _resolve_user_id(request)
+    if uid is None:
+        return web.json_response({"error": "unauthorized"}, status=401)
+    return web.json_response(db.stats(uid))
 
 
 async def web_index(request: web.Request) -> web.StreamResponse:
@@ -111,10 +241,30 @@ async def web_static(request: web.Request) -> web.StreamResponse:
 
 
 def setup_web() -> web.Application:
-    web_app.router.add_get("/api/state", api_get_state)
-    web_app.router.add_post("/api/state", api_save_state)
-    web_app.router.add_get("/", web_index)
-    web_app.router.add_get("/{path}", web_static)
+    r = web_app.router
+    r.add_get("/api/full", api_full)
+    r.add_get("/api/stats", api_stats)
+    r.add_get("/api/profile", api_profile)
+    r.add_post("/api/profile", api_profile)
+    r.add_get("/api/projects", api_projects)
+    r.add_post("/api/projects", api_projects)
+    r.add_post("/api/projects/{pid}", api_project_item)
+    r.add_delete("/api/projects/{pid}", api_project_item)
+    r.add_get("/api/tags", api_tags)
+    r.add_post("/api/tags", api_tags)
+    r.add_get("/api/tasks", api_tasks)
+    r.add_post("/api/tasks", api_tasks)
+    r.add_post("/api/tasks/{tid}", api_task_item)
+    r.add_delete("/api/tasks/{tid}", api_task_item)
+    r.add_get("/api/habits", api_habits)
+    r.add_post("/api/habits", api_habits)
+    r.add_post("/api/habits/{hid}", api_habit_item)
+    r.add_delete("/api/habits/{hid}", api_habit_item)
+    r.add_get("/api/diary", api_diary)
+    r.add_post("/api/diary", api_diary)
+    r.add_post("/api/pomo", api_pomo)
+    r.add_get("/", web_index)
+    r.add_get("/{path}", web_static)
     return web_app
 
 

@@ -3,83 +3,194 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Дневник Задач</title>
+  <title>slaughter_lord</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nosifer&display=swap">
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nosifer&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
   <div class="grain"></div>
 
-  <header class="hero">
-    <div class="cover"></div>
-    <div class="shade"></div>
-    <div class="arc"></div>
-    <div class="hero-top">
-      <span class="hero-cross">† † †</span>
-      <span class="hero-edition" id="editionBadge">RB3</span>
-    </div>
-    <h1 class="hero-title" id="appTitle">slaughter_lord</h1>
-    <p class="hero-sub" id="appSub">Записывай. Кастомизируй. Побеждай.</p>
-    <div class="hero-meta">
-      <span id="taskCount">0 задач</span>
-      <span id="doneCount">0 выполнено</span>
-    </div>
-  </header>
+  <!-- toast container -->
+  <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
 
-  <section class="panel">
-    <form id="addForm" class="add-form">
-      <input type="text" id="taskInput" class="task-input" placeholder="Новая задача..." autocomplete="off" maxlength="200">
-      <button type="submit" class="btn btn-add" id="addBtn">+</button>
-    </form>
-  </section>
-
-  <nav class="filters">
-    <button class="chip active" data-filter="all">Все</button>
-    <button class="chip" data-filter="active">Активные</button>
-    <button class="chip" data-filter="done">Выполнено</button>
-  </nav>
-
-  <ul id="taskList" class="task-list"></ul>
-  <p id="emptyState" class="empty">Поле пусто. Вперёд.</p>
-
-  <section class="panel customize">
-    <h2 class="panel-title">НАСТРОЙКИ РИТУАЛА</h2>
-
-    <label class="field">
-      <span>Заголовок</span>
-      <input type="text" id="setTitle" class="task-input" maxlength="30">
-    </label>
-
-    <label class="field">
-      <span>Подзаголовок</span>
-      <input type="text" id="setSub" class="task-input" maxlength="60">
-    </label>
-
-    <label class="field">
-      <span>Метка задачи (ед.ч.)</span>
-      <input type="text" id="setLabel" class="task-input" maxlength="20">
-    </label>
-
-    <div class="field">
-      <span>Режим</span>
-      <div class="mode-row">
-        <button class="chip active" data-mode="blood">КРОВЬ</button>
-        <button class="chip" data-mode="acid">КИСЛОТА</button>
-        <button class="chip" data-mode="void">БЕЗДНА</button>
+  <!-- App shell -->
+  <main class="shell">
+    <header class="masthead">
+      <div class="masthead-inner">
+        <div class="masthead-left">
+          <span class="masthead-crown">†</span>
+          <div>
+            <h1 class="masthead-title" id="mastheadTitle">slaughter_lord</h1>
+            <p class="masthead-sub" id="mastheadSub">Записывай. Кастомизируй. Побеждай.</p>
+          </div>
+        </div>
+        <span class="masthead-badge" id="mastheadBadge">RB3</span>
       </div>
-    </div>
+    </header>
 
-    <button id="resetBtn" class="btn btn-reset">Сбросить всё</button>
-  </section>
+    <div class="beam" aria-hidden="true"></div>
 
-  <footer class="footer">
+    <!-- ============ ХРАМ ============ -->
+    <section class="view" id="view-temple" role="tabpanel" aria-label="Храм">
+      <div class="temple-hero">
+        <div class="temple-cover"></div>
+        <div class="temple-shade"></div>
+        <div class="temple-content">
+          <h2 class="temple-greet">Добро пожаловать, <span id="templeName">Господин</span></h2>
+          <div class="stat-strip" id="templeStats"></div>
+          <div class="arc" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="quick-add panel">
+        <form id="templeQuickForm" class="add-form">
+          <input type="text" id="templeQuickInput" class="task-input" placeholder="Быстрая запись: сегодня, 18:00 купить кровь #важно"
+                 autocomplete="off" maxlength="200" aria-label="Быстрая запись задачи">
+          <button type="submit" class="btn btn-add" aria-label="Добавить">+</button>
+        </form>
+        <p class="hint">Умный ввод: «завтра 09:00 обряд #ритуал»</p>
+      </div>
+
+      <h3 class="section-head">Сегодняшние обязанности</h3>
+      <ul id="templeTasks" class="task-list"></ul>
+      <p id="templeEmpty" class="empty">Сегодня тишина. Создай свою первую жертву.</p>
+
+      <h3 class="section-head">Алтарь привычек</h3>
+      <div id="templeHabits" class="habit-strip"></div>
+      <p id="templeHabitsEmpty" class="empty">Пока нет привычек.</p>
+    </section>
+
+    <!-- ============ ЗАДАЧИ ============ -->
+    <section class="view" id="view-tasks" role="tabpanel" aria-label="Задачи" hidden>
+      <div class="panel">
+        <form id="taskAddForm" class="add-form">
+          <input type="text" id="taskAddInput" class="task-input" placeholder="Новая задача: завтра 09:00 обряд #ритуал"
+                 autocomplete="off" maxlength="200" aria-label="Новая задача">
+          <button type="submit" class="btn btn-add" aria-label="Добавить">+</button>
+        </form>
+        <p class="hint">Умный ввод: дата, время, #тег, !приоритет</p>
+      </div>
+
+      <div class="toolbar">
+        <div class="chips" role="group" aria-label="Фильтры">
+          <button class="chip active" data-filter="all">Все</button>
+          <button class="chip" data-filter="today">Сегодня</button>
+          <button class="chip" data-filter="upcoming">Предстоит</button>
+          <button class="chip" data-filter="done">Выполнено</button>
+        </div>
+        <button class="chip" id="archiveBtn" aria-pressed="false">Архив</button>
+      </div>
+
+      <div class="chips" role="group" aria-label="Проекты" id="projectChips"></div>
+
+      <ul id="taskList" class="task-list"></ul>
+      <p id="taskEmpty" class="empty">Пусто. Славься, палач.</p>
+    </section>
+
+    <!-- ============ ПРИВЫЧКИ ============ -->
+    <section class="view" id="view-habits" role="tabpanel" aria-label="Привычки" hidden>
+      <div class="panel">
+        <form id="habitForm" class="add-form">
+          <input type="text" id="habitInput" class="task-input" placeholder="Новая привычка..." autocomplete="off" maxlength="60" aria-label="Новая привычка">
+          <button type="submit" class="btn btn-add" aria-label="Добавить">+</button>
+        </form>
+        <label class="check-row">
+          <input type="checkbox" id="habitGood" checked aria-label="Полезная привычка">
+          <span>Полезная (избавляемся от вредной — снять)</span>
+        </label>
+      </div>
+      <div id="habitList"></div>
+      <p id="habitEmpty" class="empty">Ни одной привычки. Начни ритуал.</p>
+    </section>
+
+    <!-- ============ ДНЕВНИК ============ -->
+    <section class="view" id="view-diary" role="tabpanel" aria-label="Дневник" hidden>
+      <div class="panel">
+        <h3 class="section-head">Исповедь дня</h3>
+        <textarea id="diaryInput" class="task-input diary-input" rows="5" placeholder="Запиши свои мысли, события, победы..." aria-label="Запись дневника"></textarea>
+        <div class="diary-controls">
+          <div class="chips" role="group" aria-label="Настроение">
+            <button class="chip" data-mood="1" aria-label="Плохо">😞</button>
+            <button class="chip" data-mood="2" aria-label="Нормально">😐</button>
+            <button class="chip" data-mood="3" aria-label="Хорошо">🙂</button>
+            <button class="chip" data-mood="4" aria-label="Отлично">🔥</button>
+          </div>
+          <button class="btn btn-ghost" id="diarySave">Сохранить</button>
+        </div>
+      </div>
+      <h3 class="section-head">Летопись</h3>
+      <div id="diaryList"></div>
+      <p id="diaryEmpty" class="empty">Исповедей пока нет.</p>
+    </section>
+
+    <!-- ============ СТАТИСТИКА ============ -->
+    <section class="view" id="view-stats" role="tabpanel" aria-label="Статистика" hidden>
+      <h3 class="section-head">Летопись побед</h3>
+      <div class="stat-grid" id="statsGrid"></div>
+
+      <h3 class="section-head">Помодоро</h3>
+      <div class="panel pomo-panel">
+        <div class="pomo-display" id="pomoDisplay">25:00</div>
+        <div class="chips" role="group" aria-label="Интервалы">
+          <button class="chip" data-min="25">25</button>
+          <button class="chip" data-min="50">50</button>
+          <button class="chip" data-min="15">15</button>
+        </div>
+        <button class="btn btn-ghost pomo-toggle" id="pomoToggle">Старт</button>
+      </div>
+    </section>
+
+    <!-- ============ КУЛЬТ (настройки) ============ -->
+    <section class="view" id="view-cult" role="tabpanel" aria-label="Настройки" hidden>
+      <h3 class="section-head">Идентичность культа</h3>
+      <div class="panel">
+        <label class="field"><span>Титул (имя)</span><input type="text" id="setTitle" class="task-input" maxlength="30"></label>
+        <label class="field"><span>Подзаголовок</span><input type="text" id="setSub" class="task-input" maxlength="60"></label>
+        <label class="field"><span>Метка задачи (ед.ч.)</span><input type="text" id="setLabel" class="task-input" maxlength="20"></label>
+      </div>
+
+      <h3 class="section-head">Палитра</h3>
+      <div class="panel">
+        <label class="field"><span>Акцентный цвет</span><input type="color" id="setAccent" class="color-input" value="#ff0d0d"></label>
+        <div class="field"><span>Режим</span>
+          <div class="mode-row">
+            <button class="chip active" data-mode="blood">КРОВЬ</button>
+            <button class="chip" data-mode="acid">КИСЛОТА</button>
+            <button class="chip" data-mode="void">БЕЗДНА</button>
+          </div>
+        </div>
+      </div>
+
+      <button id="resetBtn" class="btn btn-reset">Очистить всё</button>
+    </section>
+  </main>
+
+  <footer class="app-foot">
     <span>† slaughter_lord †</span>
-    <button id="clearDone" class="btn btn-ghost">Очистить выполненные</button>
+    <button id="clearDone" class="btn btn-ghost">В архив выполненные</button>
   </footer>
 
+  <!-- bottom navigation -->
+  <nav class="tabbar" aria-label="Основная навигация">
+    <button class="tab active" data-view="temple" aria-label="Храм">⛩</button>
+    <button class="tab" data-view="tasks" aria-label="Задачи">☠</button>
+    <button class="tab" data-view="habits" aria-label="Привычки">🕯</button>
+    <button class="tab" data-view="diary" aria-label="Дневник">📜</button>
+    <button class="tab" data-view="stats" aria-label="Статистика">📊</button>
+    <button class="tab" data-view="cult" aria-label="Настройки">⚙</button>
+  </nav>
+
+  <!-- modal -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head"><h3 id="modalTitle">Задача</h3><button class="btn btn-ghost" id="modalClose" aria-label="Закрыть">✕</button></div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
