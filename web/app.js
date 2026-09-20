@@ -9,7 +9,7 @@
     title: "БОЕВОЙ ДНЕВНИК",
     sub: "Записывай. Кастомизируй. Побеждай.",
     label: "задача",
-    accent: "#ff2e2e",
+    accent: "#ff0d0d",
     mode: "blood",
     tasks: [],
   };
@@ -229,8 +229,8 @@
     if (tg) {
       tg.ready();
       tg.expand();
-      tg.setHeaderColor("#0a0a0a");
-      tg.setBackgroundColor("#0a0a0a");
+      tg.setHeaderColor("#070203");
+      tg.setBackgroundColor("#070203");
     }
 
     bindEvents();

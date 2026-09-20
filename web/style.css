@@ -1,10 +1,13 @@
 :root {
-  --accent: #ff2e2e;
-  --bg: #0a0a0a;
-  --panel: #121212;
-  --ink: #f2f2f2;
-  --muted: #777;
-  --line: #2a2a2a;
+  --accent: #ff0d0d;
+  --blood: #ff0d0d;
+  --bone: #ece1cb;
+  --bg: #070203;
+  --panel: #100606;
+  --ink: #ece1cb;
+  --muted: #9c7a64;
+  --line: #3d1212;
+  --rainbow: linear-gradient(90deg, #ff1e1e, #ff8a00, #ffee00, #38ff5c, #27c8ff, #b44dff);
 }
 
 * {
@@ -15,7 +18,11 @@
 
 body {
   font-family: "Segoe UI", "Roboto", Arial, sans-serif;
-  background: var(--bg);
+  background:
+    radial-gradient(120% 55% at 50% -10%, rgba(255, 13, 13, 0.38), transparent 60%),
+    radial-gradient(90% 40% at 50% 115%, rgba(60, 0, 0, 0.55), transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
   color: var(--ink);
   min-height: 100vh;
   overflow-x: hidden;
@@ -28,7 +35,7 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    linear-gradient(0deg, rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+    linear-gradient(0deg, rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
     repeating-linear-gradient(45deg, transparent 0 6px, rgba(255,255,255,0.015) 6px 7px);
   pointer-events: none;
   z-index: 0;
@@ -37,7 +44,7 @@ body::before {
 .grain {
   position: fixed;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 50;
 }
@@ -46,8 +53,54 @@ body::before {
   position: relative;
   z-index: 1;
   padding: 26px 18px 18px;
-  border-bottom: 4px solid var(--accent);
-  background: linear-gradient(180deg, #111, #0a0a0a);
+  background: linear-gradient(180deg, rgba(40, 2, 2, 0.9), rgba(7, 2, 3, 0.2));
+  overflow: hidden;
+}
+
+/* RB3 inferno sky glow + black castle silhouette + neon rainbow ring */
+.hero .sky {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(70% 90% at 50% 0%, rgba(255, 60, 0, 0.5), transparent 65%),
+    radial-gradient(40% 50% at 15% 20%, rgba(255, 238, 0, 0.12), transparent 70%),
+    radial-gradient(40% 50% at 85% 25%, rgba(180, 77, 255, 0.14), transparent 70%);
+  pointer-events: none;
+}
+
+.hero .arc {
+  position: absolute;
+  left: 50%;
+  top: -150px;
+  width: 340px;
+  height: 340px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: conic-gradient(from 180deg, #ff1e1e, #ff8a00, #ffee00, #38ff5c, #27c8ff, #b44dff, #ff1e1e);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 9px), #000 calc(100% - 8px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 9px), #000 calc(100% - 8px));
+  opacity: 0.55;
+  filter: blur(0.5px);
+  pointer-events: none;
+}
+
+.hero .castle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 64px;
+  background: #000;
+  clip-path: polygon(0 100%, 0 45%, 4% 45%, 4% 20%, 6% 20%, 6% 45%, 9% 45%, 9% 30%, 12% 30%, 12% 12%, 14% 12%, 14% 30%, 17% 30%, 17% 45%, 24% 45%, 24% 25%, 27% 25%, 27% 45%, 31% 45%, 31% 8%, 34% 8%, 34% 45%, 38% 45%, 38% 28%, 41% 28%, 41% 45%, 47% 45%, 47% 18%, 50% 18%, 50% 45%, 55% 45%, 55% 30%, 58% 30%, 58% 10%, 61% 10%, 61% 30%, 64% 30%, 64% 45%, 70% 45%, 70% 22%, 73% 22%, 73% 45%, 78% 45%, 78% 32%, 81% 32%, 81% 14%, 84% 14%, 84% 32%, 87% 32%, 87% 45%, 93% 45%, 93% 25%, 96% 25%, 96% 45%, 100% 45%, 100% 100%);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.hero-top,
+.hero-title,
+.hero-sub,
+.hero-meta {
+  position: relative;
 }
 
 .hero-top {
@@ -60,27 +113,49 @@ body::before {
 .hero-logo {
   font-weight: 900;
   letter-spacing: 2px;
-  color: var(--accent);
+  color: var(--bone);
   font-size: 14px;
+  text-shadow: 0 0 12px rgba(255, 13, 13, 0.8), 2px 2px 0 #000;
 }
 
 .hero-edition {
   font-size: 11px;
   letter-spacing: 3px;
-  color: var(--muted);
-  border: 1px solid var(--line);
+  color: var(--bone);
+  border: 1px solid var(--accent);
   padding: 3px 8px;
+  background: rgba(255, 13, 13, 0.15);
 }
 
+/* Bloody type: dripping horror font (latin) + blood glow that works for any script */
 .hero-title {
+  font-family: "Nosifer", "Arial Black", Impact, sans-serif;
   font-size: 30px;
-  font-weight: 900;
+  font-weight: 400;
   text-transform: uppercase;
-  line-height: 1;
+  line-height: 1.15;
   letter-spacing: 1px;
-  clip-path: polygon(0 0, 100% 4%, 98% 100%, 0 96%);
-  color: var(--accent);
-  text-shadow: 3px 3px 0 rgba(255,255,255,0.08);
+  color: var(--bone);
+  text-shadow:
+    0 2px 0 #4d0000,
+    0 0 22px rgba(255, 13, 13, 0.65),
+    4px 4px 0 rgba(0, 0, 0, 0.9);
+  position: relative;
+  padding-bottom: 14px;
+}
+
+/* blood drips hanging off the title */
+.hero-title::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  right: 0;
+  bottom: 0;
+  height: 12px;
+  background-image: radial-gradient(circle at 8px -3px, var(--accent) 7px, transparent 8px);
+  background-size: 26px 12px;
+  background-repeat: repeat-x;
+  filter: drop-shadow(0 0 6px rgba(255, 13, 13, 0.8));
 }
 
 .hero-sub {
@@ -100,13 +175,22 @@ body::before {
 }
 
 .hero-meta span {
-  background: var(--panel);
+  background: rgba(0, 0, 0, 0.6);
   border: 1px solid var(--line);
   padding: 5px 10px;
 }
 
 .hero-meta span:last-child {
   color: var(--accent);
+}
+
+/* neon rainbow beam divider, like the arcs on the RB3 cover */
+.beam {
+  height: 6px;
+  background: var(--rainbow);
+  box-shadow: 0 0 14px rgba(255, 30, 30, 0.7), 0 0 30px rgba(180, 77, 255, 0.35);
+  position: relative;
+  z-index: 1;
 }
 
 .panel {
@@ -116,16 +200,20 @@ body::before {
   background: var(--panel);
   border: 1px solid var(--line);
   padding: 14px;
+  box-shadow: 0 0 24px rgba(255, 13, 13, 0.08), inset 0 0 40px rgba(0, 0, 0, 0.6);
 }
 
 .panel-title {
+  font-family: "Nosifer", "Arial Black", Impact, sans-serif;
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--accent);
+  color: var(--bone);
+  text-shadow: 0 0 14px rgba(255, 13, 13, 0.7), 2px 2px 0 #000;
   margin-bottom: 14px;
-  border-bottom: 2px solid var(--accent);
+  border-bottom: 2px solid transparent;
+  border-image: var(--rainbow) 1;
   padding-bottom: 8px;
 }
 
@@ -136,17 +224,18 @@ body::before {
 
 .task-input {
   flex: 1;
-  background: #0d0d0d;
+  background: #0a0404;
   border: 1px solid var(--line);
   color: var(--ink);
   padding: 12px;
   font-size: 15px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .task-input:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(255, 13, 13, 0.35);
 }
 
 .btn {
@@ -163,11 +252,13 @@ body::before {
 }
 
 .btn-add {
-  background: var(--accent);
-  color: #fff;
+  background: linear-gradient(180deg, #ff2a2a, #a80000);
+  color: var(--bone);
+  text-shadow: 1px 1px 0 #000;
   font-size: 22px;
   width: 48px;
   clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+  box-shadow: 0 0 16px rgba(255, 13, 13, 0.5);
 }
 
 .filters {
@@ -180,7 +271,7 @@ body::before {
 
 .chip {
   cursor: pointer;
-  background: var(--panel);
+  background: rgba(0, 0, 0, 0.6);
   border: 1px solid var(--line);
   color: var(--muted);
   padding: 8px 16px;
@@ -191,9 +282,11 @@ body::before {
 }
 
 .chip.active {
-  background: var(--accent);
-  color: #fff;
+  background: linear-gradient(180deg, #ff2a2a, #a80000);
+  color: var(--bone);
+  text-shadow: 1px 1px 0 #000;
   border-color: var(--accent);
+  box-shadow: 0 0 14px rgba(255, 13, 13, 0.55);
 }
 
 .task-list {
@@ -298,7 +391,7 @@ body::before {
 .color-input {
   width: 100%;
   height: 44px;
-  background: #0d0d0d;
+  background: #0a0404;
   border: 1px solid var(--line);
   cursor: pointer;
 }
@@ -310,7 +403,7 @@ body::before {
 
 .btn-reset {
   width: 100%;
-  background: #1a1a1a;
+  background: #1a0b0b;
   border: 1px solid var(--line);
   color: var(--muted);
   padding: 12px;
@@ -347,18 +440,20 @@ body::before {
   border-color: var(--accent);
 }
 
-/* Acid mode */
+/* Rainbow venom mode (neon green band of the cover arcs) */
 body[data-mode="acid"] {
-  --accent: #b6ff00;
-  --bg: #0b0d06;
-  --panel: #12140a;
-  --line: #2b3310;
+  --accent: #a8ff00;
+  --bg: #070903;
+  --panel: #0e1206;
+  --line: #2c3a0e;
+  --muted: #7d8a55;
 }
 
-/* Void mode */
+/* Castle dark mode (black towers + purple arc band) */
 body[data-mode="void"] {
-  --accent: #7d5fff;
-  --bg: #05040a;
-  --panel: #0d0b18;
-  --line: #241c44;
+  --accent: #b44dff;
+  --bg: #060309;
+  --panel: #0e0816;
+  --line: #2b1a44;
+  --muted: #7f6fa0;
 }

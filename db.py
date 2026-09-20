@@ -11,7 +11,7 @@ DEFAULT_STATE = {
     "title": "БОЕВОЙ ДНЕВНИК",
     "sub": "Записывай. Кастомизируй. Побеждай.",
     "label": "задача",
-    "accent": "#ff2e2e",
+    "accent": "#ff0d0d",
     "mode": "blood",
     "tasks": [],
 }
