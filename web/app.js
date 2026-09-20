@@ -14,6 +14,10 @@
   let taskFilter = "all";
   let showArchive = false;
   let currentProjectId = null;
+  let taskViewMode = "list";
+  let calY = null;
+  let calM = null;
+  let calSel = todayStr();
   let pomoMinutes = 25;
   let pomoLeft = 25 * 60;
   let pomoTimer = null;
@@ -323,9 +327,11 @@
     }
     const today = todayStr();
     let tasks = state.tasks.filter(t => showArchive ? t.archived : !t.archived);
-    if (taskFilter === "today") tasks = tasks.filter(t => !t.done && t.due === today);
-    else if (taskFilter === "upcoming") tasks = tasks.filter(t => !t.done && t.due && t.due > today);
-    else if (taskFilter === "done") tasks = tasks.filter(t => t.done);
+    if (taskViewMode === "list") {
+      if (taskFilter === "today") tasks = tasks.filter(t => !t.done && t.due === today);
+      else if (taskFilter === "upcoming") tasks = tasks.filter(t => !t.done && t.due && t.due > today);
+      else if (taskFilter === "done") tasks = tasks.filter(t => t.done);
+    }
     if (currentProjectId) tasks = tasks.filter(t => t.project_id === currentProjectId);
     tasks.sort((a, b) => (b.priority - a.priority) || ((a.due || "9999") < (b.due || "9999") ? -1 : 1));
     const ul = $("taskList");
@@ -337,6 +343,116 @@
       for (let j = 0; j < kids.length; j++) ul.appendChild(buildTaskEl(kids[j]));
     }
     $("taskEmpty").style.display = tasks.length ? "none" : "block";
+
+    const isList = taskViewMode === "list";
+    ul.style.display = isList ? "" : "none";
+    $("taskEmpty").style.display = (isList && !tasks.length) ? "block" : "none";
+    $("calWrap").hidden = taskViewMode !== "cal";
+    $("kanbanWrap").hidden = taskViewMode !== "kanban";
+    if (taskViewMode === "cal") renderCalendar(tasks);
+    if (taskViewMode === "kanban") renderKanban(tasks);
+  }
+
+  function monthKey(y, m, d) {
+    return y + "-" + String(m + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+  }
+
+  function renderCalendar(tasks) {
+    const now = new Date();
+    if (calY === null) { calY = now.getFullYear(); calM = now.getMonth(); }
+    const label = new Date(calY, calM, 1).toLocaleDateString("ru-RU", { month: "long", year: "numeric" });
+    $("calLabel").textContent = label;
+    const grid = $("calGrid");
+    grid.innerHTML = "";
+    const dows = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+    for (let i = 0; i < 7; i++) {
+      const h = document.createElement("div");
+      h.className = "cal-dow";
+      h.textContent = dows[i];
+      grid.appendChild(h);
+    }
+    const first = (new Date(calY, calM, 1).getDay() || 7) - 1;
+    const dim = new Date(calY, calM + 1, 0).getDate();
+    const today = todayStr();
+    const byDay = {};
+    for (let i = 0; i < tasks.length; i++) {
+      if (tasks[i].due) {
+        if (!byDay[tasks[i].due]) byDay[tasks[i].due] = [];
+        byDay[tasks[i].due].push(tasks[i]);
+      }
+    }
+    for (let i = 0; i < first; i++) {
+      const b = document.createElement("div");
+      b.className = "cal-day blank";
+      grid.appendChild(b);
+    }
+    for (let d = 1; d <= dim; d++) {
+      const key = monthKey(calY, calM, d);
+      const c = document.createElement("button");
+      c.className = "cal-day";
+      if (key === today) c.classList.add("today");
+      if (key === calSel) c.classList.add("sel");
+      const n = document.createElement("span");
+      n.textContent = d;
+      c.appendChild(n);
+      if (byDay[key]) {
+        const dot = document.createElement("span");
+        dot.className = "cal-dot";
+        dot.textContent = byDay[key].length > 9 ? "9+" : byDay[key].length;
+        dot.style.width = "auto";
+        dot.style.height = "auto";
+        dot.style.borderRadius = "999px";
+        dot.style.padding = "0 4px";
+        dot.style.fontSize = "9px";
+        dot.style.color = "#000";
+        c.appendChild(dot);
+        if (byDay[key].some(t => t.important)) c.classList.add("has-ice");
+      }
+      c.setAttribute("aria-label", key);
+      c.addEventListener("click", () => { calSel = key; renderCalendar(tasks); });
+      grid.appendChild(c);
+    }
+    $("calDayLabel").textContent = calSel === today ? "Сегодня" : calSel;
+    const dl = $("calDayList");
+    dl.innerHTML = "";
+    const dayTasks = (byDay[calSel] || []).slice().sort((a, b) => (b.priority - a.priority));
+    for (let i = 0; i < dayTasks.length; i++) dl.appendChild(buildTaskEl(dayTasks[i]));
+    if (!dayTasks.length) {
+      const p = document.createElement("p");
+      p.className = "empty";
+      p.textContent = "В этот день тишина";
+      dl.appendChild(p);
+    }
+  }
+
+  function renderKanban(tasks) {
+    const today = todayStr();
+    const cols = [
+      { name: "Новые", list: tasks.filter(t => !t.done && (!t.due || t.due > today)) },
+      { name: "Сегодня", list: tasks.filter(t => !t.done && t.due && t.due <= today) },
+      { name: "Готово", list: tasks.filter(t => t.done) }
+    ];
+    const box = $("kanbanCols");
+    box.innerHTML = "";
+    for (let i = 0; i < cols.length; i++) {
+      const col = document.createElement("div");
+      col.className = "kan-col";
+      const head = document.createElement("div");
+      head.className = "kan-head";
+      const nm = document.createElement("span");
+      nm.textContent = cols[i].name;
+      const cnt = document.createElement("b");
+      cnt.textContent = cols[i].list.length;
+      head.appendChild(nm);
+      head.appendChild(cnt);
+      col.appendChild(head);
+      const ul = document.createElement("ul");
+      ul.className = "kan-list";
+      const sorted = cols[i].list.slice().sort((a, b) => (b.priority - a.priority));
+      for (let j = 0; j < sorted.length; j++) ul.appendChild(buildTaskEl(sorted[j]));
+      col.appendChild(ul);
+      box.appendChild(col);
+    }
   }
 
   function calcStreak(h) {
@@ -684,6 +800,29 @@
       showArchive = !showArchive;
       if (showArchive) $("archiveBtn").classList.add("active");
       else $("archiveBtn").classList.remove("active");
+      renderTasks();
+    });
+    const tviews = document.querySelectorAll("[data-tview]");
+    for (let i = 0; i < tviews.length; i++) {
+      tviews[i].addEventListener("click", () => {
+        taskViewMode = tviews[i].dataset.tview;
+        for (let j = 0; j < tviews.length; j++) {
+          if (tviews[j] === tviews[i]) tviews[j].classList.add("active");
+          else tviews[j].classList.remove("active");
+        }
+        renderTasks();
+      });
+    }
+    $("calPrev").addEventListener("click", () => {
+      if (calM === null) { const n = new Date(); calY = n.getFullYear(); calM = n.getMonth(); }
+      if (calM === 0) { calM = 11; calY--; }
+      else calM--;
+      renderTasks();
+    });
+    $("calNext").addEventListener("click", () => {
+      if (calM === null) { const n = new Date(); calY = n.getFullYear(); calM = n.getMonth(); }
+      if (calM === 11) { calM = 0; calY++; }
+      else calM++;
       renderTasks();
     });
     $("habitForm").addEventListener("submit", (e) => {

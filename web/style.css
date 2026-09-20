@@ -311,6 +311,54 @@ body {
 .toast.error { border-color: #ff1e1e; }
 @keyframes drop { from { transform: translateY(-16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+/* ---------- calendar ---------- */
+.cal-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 14px;
+}
+.cal-nav span {
+  font-family: "Cormorant Garamond", serif; font-size: 20px; font-weight: 600;
+  text-transform: capitalize;
+}
+.cal-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+  padding: 6px 14px;
+}
+.cal-dow {
+  text-align: center; font-size: 10px; color: var(--muted);
+  text-transform: uppercase; padding: 4px 0;
+}
+.cal-day {
+  cursor: pointer; min-height: 42px; border: 1px solid var(--line);
+  border-radius: 10px; background: rgba(0, 0, 0, 0.4); color: var(--bone);
+  font-size: 12px; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 2px; position: relative;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.cal-day.blank { visibility: hidden; }
+.cal-day.today { border-color: var(--accent); box-shadow: 0 0 10px rgba(255, 13, 13, 0.45); }
+.cal-day.sel { background: rgba(255, 13, 13, 0.18); border-color: var(--accent); }
+.cal-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+.cal-day.has-ice .cal-dot { background: var(--ice); }
+
+/* ---------- kanban ---------- */
+.kanban-cols {
+  display: grid; grid-template-columns: repeat(3, minmax(190px, 1fr));
+  gap: 10px; padding: 6px 14px 14px; overflow-x: auto;
+}
+.kan-col {
+  background: rgba(0, 0, 0, 0.35); border: 1px solid var(--line);
+  border-radius: 14px; padding: 8px; min-height: 120px;
+}
+.kan-head {
+  font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--muted); padding: 4px 6px 10px; display: flex; justify-content: space-between;
+}
+.kan-head b { color: var(--accent); }
+.kan-list { list-style: none; padding: 0; margin: 0; }
+.kan-list .task { margin-bottom: 8px; }
+.kan-list .task.sub { margin-left: 0; }
+
 /* ---------- themes ---------- */
 body[data-mode="acid"] {
   --accent: #a8ff00; --bg: #070903; --panel: #0e1206; --line: #2c3a0e; --muted: #7d8a55;

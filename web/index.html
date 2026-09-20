@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nosifer&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
   <div class="grain"></div>
@@ -74,6 +74,14 @@
       </div>
 
       <div class="toolbar">
+        <div class="chips" role="group" aria-label="Вид">
+          <button class="chip active" data-tview="list">Список</button>
+          <button class="chip" data-tview="cal">Календарь</button>
+          <button class="chip" data-tview="kanban">Канбан</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
         <div class="chips" role="group" aria-label="Фильтры">
           <button class="chip active" data-filter="all">Все</button>
           <button class="chip" data-filter="today">Сегодня</button>
@@ -87,6 +95,21 @@
 
       <ul id="taskList" class="task-list"></ul>
       <p id="taskEmpty" class="empty">Пусто. Славься, палач.</p>
+
+      <div id="calWrap" hidden>
+        <div class="cal-nav">
+          <button class="btn btn-ghost" id="calPrev" aria-label="Прошлый месяц">‹</button>
+          <span id="calLabel"></span>
+          <button class="btn btn-ghost" id="calNext" aria-label="Следующий месяц">›</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <h3 class="section-head" id="calDayLabel">День</h3>
+        <ul id="calDayList" class="task-list"></ul>
+      </div>
+
+      <div id="kanbanWrap" hidden>
+        <div class="kanban-cols" id="kanbanCols"></div>
+      </div>
     </section>
 
     <!-- ============ ПРИВЫЧКИ ============ -->
@@ -191,6 +214,6 @@
   </div>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="app.js?v=5"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>
