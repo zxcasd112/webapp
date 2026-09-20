@@ -261,6 +261,13 @@ body {
 .check-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 13px; color: var(--muted); cursor: pointer; }
 .check-row input { width: 18px; height: 18px; accent-color: var(--accent); }
 
+.boot-fail {
+  position: fixed; left: 50%; top: 40%; transform: translate(-50%, -50%);
+  z-index: 200; background: var(--panel); border: 1px solid var(--accent);
+  border-radius: 14px; padding: 16px 20px; font-size: 14px; text-align: center;
+  max-width: 86vw; box-shadow: var(--shadow);
+}
+
 /* ---------- tab bar ---------- */
 .app-foot {
   display: flex; justify-content: space-between; align-items: center;

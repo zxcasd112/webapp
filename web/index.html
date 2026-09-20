@@ -7,13 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nosifer&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
   <div class="grain"></div>
 
   <!-- toast container -->
   <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+  <div class="boot-fail" id="bootFail" hidden>Не запускается? Обновите Telegram и откройте заново.</div>
 
   <!-- App shell -->
   <main class="shell">
@@ -214,6 +215,14 @@
   </div>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="app.js?v=6"></script>
+  <script>
+    setTimeout(function () {
+      if (!window.__booted) {
+        var el = document.getElementById("bootFail");
+        if (el) el.hidden = false;
+      }
+    }, 10000);
+  </script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>

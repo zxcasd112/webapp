@@ -48,19 +48,48 @@
   function saveProfile() { apiSave("profile", state.profile); }
   function saveTask(t) { apiSave("tasks/" + t.id, t); }
 
+  function fetchWithTimeout(url, opts, ms) {
+    opts = opts || {};
+    if (typeof AbortController === "undefined") return fetch(url, opts);
+    const c = new AbortController();
+    const t = setTimeout(() => c.abort(), ms);
+    opts.signal = c.signal;
+    return fetch(url, opts).then(
+      (r) => { clearTimeout(t); return r; },
+      (e) => { clearTimeout(t); throw e; }
+    );
+  }
+
   async function loadFull() {
     try {
-      const r = await apiFetch("full");
+      const r = await fetchWithTimeout(apiUrl("full"), {}, 12000);
       if (!r.ok) throw new Error("api");
       state = await r.json();
       if (!state.stats) state.stats = blankStats();
     } catch (e) {
       demoMode = true;
       state.stats = blankStats();
-      toast("DEMO: сервер недоступен, данные локальные");
+      toast("DEMO: сервер просыпается");
+      setTimeout(retryLoad, 20000);
     }
     applyProfile();
     renderAll();
+  }
+
+  async function retryLoad() {
+    if (!demoMode) return;
+    try {
+      const r = await fetchWithTimeout(apiUrl("full"), {}, 15000);
+      if (!r.ok) throw new Error("api");
+      state = await r.json();
+      if (!state.stats) state.stats = blankStats();
+      demoMode = false;
+      applyProfile();
+      renderAll();
+      toast("Сервер проснулся");
+    } catch (e) {
+      setTimeout(retryLoad, 30000);
+    }
   }
   function blankStats() {
     return { done_total: 0, open_total: 0, done_today: 0, open_today: 0, pomo_minutes_today: 0, habit_count: 0, today: todayStr() };
@@ -893,6 +922,7 @@
   }
 
   function boot() {
+    window.__booted = true;
     if (tg) {
       try {
         tg.ready();
