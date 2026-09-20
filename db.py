@@ -8,7 +8,7 @@ DB_PATH = Path("data") / "journal.db"
 _local = threading.local()
 
 DEFAULT_STATE = {
-    "title": "БОЕВОЙ ДНЕВНИК",
+    "title": "slaughter_lord",
     "sub": "Записывай. Кастомизируй. Побеждай.",
     "label": "задача",
     "accent": "#ff0d0d",

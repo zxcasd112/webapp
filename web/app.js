@@ -6,7 +6,7 @@
   const $ = (id) => document.getElementById(id);
 
   const DEFAULT = {
-    title: "БОЕВОЙ ДНЕВНИК",
+    title: "slaughter_lord",
     sub: "Записывай. Кастомизируй. Побеждай.",
     label: "задача",
     accent: "#ff0d0d",
@@ -17,6 +17,7 @@
   let state = { ...DEFAULT, tasks: [] };
   let filter = "all";
   let ready = false;
+  let demo = false;
   let saving = false;
   let savePending = false;
 
@@ -26,7 +27,24 @@
     return `/api/state?initData=${encodeURIComponent(initData)}`;
   }
 
+  function loadLocal() {
+    try {
+      const raw = localStorage.getItem("taskjournal");
+      if (raw) state = { ...DEFAULT, ...JSON.parse(raw) };
+    } catch (e) {
+      state = { ...DEFAULT, tasks: [] };
+    }
+    if (!Array.isArray(state.tasks)) state.tasks = [];
+  }
+
   async function fetchState() {
+    if (!initData) {
+      // открыто в обычном браузере — демо-режим, данные локально
+      demo = true;
+      loadLocal();
+      ready = true;
+      return;
+    }
     const res = await fetch(apiPath());
     if (!res.ok) throw new Error("load failed " + res.status);
     const data = await res.json();
@@ -36,6 +54,14 @@
   }
 
   async function persist() {
+    if (demo) {
+      try {
+        localStorage.setItem("taskjournal", JSON.stringify(state));
+      } catch (e) {
+        /* нечего делать */
+      }
+      return;
+    }
     if (saving) {
       savePending = true;
       return;
@@ -85,7 +111,7 @@
     $("setTitle").value = state.title;
     $("setSub").value = state.sub;
     $("setLabel").value = state.label;
-    $("setAccent").value = state.accent;
+    $("editionBadge").textContent = demo ? "DEMO" : "RB3";
 
     document.documentElement.style.setProperty("--accent", state.accent);
     document.body.dataset.mode = state.mode;
@@ -212,12 +238,6 @@
     $("setLabel").addEventListener("input", (e) => {
       state.label = e.target.value.trim() || DEFAULT.label;
       renderMeta();
-      save();
-    });
-
-    $("setAccent").addEventListener("input", (e) => {
-      state.accent = e.target.value;
-      document.documentElement.style.setProperty("--accent", state.accent);
       save();
     });
 
