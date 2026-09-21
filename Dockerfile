@@ -9,6 +9,10 @@ COPY . .
 
 ENV WEB_HOST=0.0.0.0
 ENV WEB_PORT=8080
+ENV PYTHONUNBUFFERED=1
+# На бесплатном Render диск эфемерный. Для постоянного хранения подключите
+# Render Disk (платно) и укажите DATA_DIR=/var/data
+ENV DATA_DIR=/app/data
 
 EXPOSE 8080
 

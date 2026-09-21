@@ -2,7 +2,10 @@ name: keepalive
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    # Пинг каждые 5 минут: бесплатный Render засыпает после ~15 минут простоя.
+    # Заметьте: GitHub Actions cron может задерживаться — это нормально,
+    # фронтенд написан так, что «холодный старт» для пользователя почти незаметен.
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -10,4 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Wake Render service
-        run: curl -fsS -m 30 "https://webapp-2-kds9.onrender.com/" -o /dev/null
+        run: |
+          for i in 1 2 3; do
+            code=$(curl -sS -o /dev/null -w "%{http_code}" -m 60 "https://webapp-2-kds9.onrender.com/health" || true)
+            echo "attempt $i -> $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 20
+          done
+          exit 1

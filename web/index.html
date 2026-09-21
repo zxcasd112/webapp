@@ -2,27 +2,32 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0608">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Дневник задач, привычек и фокуса прямо в Telegram">
   <title>slaughter_lord</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0608'/%3E%3Ctext x='16' y='24' font-size='22' text-anchor='middle' fill='%23ff0d0d'%3E%E2%80%A0%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nosifer&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="style.css?v=7">
+  <!-- Шрифты грузятся асинхронно: разметка не ждёт сторонний домен -->
+  <link rel="stylesheet" data-async-css
+        href="https://fonts.googleapis.com/css2?family=Nosifer&family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;600;800&display=swap"
+        media="print">
+  <link rel="stylesheet" href="style.css?v=9">
 </head>
-<body>
-  <div class="grain"></div>
-
-  <!-- toast container -->
+<body data-mode="blood">
+  <div class="grain" aria-hidden="true"></div>
   <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+  <div class="net-badge" id="netBadge" hidden>нет связи</div>
   <div class="boot-fail" id="bootFail" hidden>Не запускается? Обновите Telegram и откройте заново.</div>
 
-  <!-- App shell -->
   <main class="shell">
     <header class="masthead">
       <div class="masthead-inner">
         <div class="masthead-left">
-          <span class="masthead-crown">†</span>
-          <div>
+          <span class="masthead-crown" aria-hidden="true">†</span>
+          <div class="masthead-text">
             <h1 class="masthead-title" id="mastheadTitle">slaughter_lord</h1>
             <p class="masthead-sub" id="mastheadSub">Записывай. Кастомизируй. Побеждай.</p>
           </div>
@@ -36,27 +41,30 @@
     <!-- ============ ХРАМ ============ -->
     <section class="view" id="view-temple" role="tabpanel" aria-label="Храм">
       <div class="temple-hero">
-        <div class="temple-cover"></div>
-        <div class="temple-shade"></div>
+        <picture>
+          <source type="image/webp" srcset="rb3.webp?v=9">
+          <img class="temple-cover" src="rb3.jpg?v=9" width="640" height="640" alt="" decoding="async" fetchpriority="high">
+        </picture>
+        <div class="temple-shade" aria-hidden="true"></div>
         <div class="temple-content">
           <h2 class="temple-greet">Добро пожаловать, <span id="templeName">Господин</span></h2>
           <div class="stat-strip" id="templeStats"></div>
-          <div class="arc" aria-hidden="true"></div>
         </div>
       </div>
 
       <div class="quick-add panel">
-        <form id="templeQuickForm" class="add-form">
-          <input type="text" id="templeQuickInput" class="task-input" placeholder="Быстрая запись: сегодня, 18:00 купить кровь #важно"
-                 autocomplete="off" maxlength="200" aria-label="Быстрая запись задачи">
+        <form id="templeQuickForm" class="add-form" autocomplete="off">
+          <input type="text" id="templeQuickInput" class="task-input"
+                 placeholder="Завтра 18:00 обряд #ритуал !важно" maxlength="200"
+                 aria-label="Быстрая запись задачи">
           <button type="submit" class="btn btn-add" aria-label="Добавить">+</button>
         </form>
-        <p class="hint">Умный ввод: «завтра 09:00 обряд #ритуал»</p>
+        <p class="hint">Умный ввод: дата, время, #тег и !важность понимаются на лету</p>
       </div>
 
       <h3 class="section-head">Сегодняшние обязанности</h3>
       <ul id="templeTasks" class="task-list"></ul>
-      <p id="templeEmpty" class="empty">Сегодня тишина. Создай свою первую жертву.</p>
+      <p id="templeEmpty" class="empty">Сегодня тишина. Создай свою первую запись.</p>
 
       <h3 class="section-head">Алтарь привычек</h3>
       <div id="templeHabits" class="habit-strip"></div>
@@ -66,12 +74,12 @@
     <!-- ============ ЗАДАЧИ ============ -->
     <section class="view" id="view-tasks" role="tabpanel" aria-label="Задачи" hidden>
       <div class="panel">
-        <form id="taskAddForm" class="add-form">
-          <input type="text" id="taskAddInput" class="task-input" placeholder="Новая задача: завтра 09:00 обряд #ритуал"
-                 autocomplete="off" maxlength="200" aria-label="Новая задача">
+        <form id="taskAddForm" class="add-form" autocomplete="off">
+          <input type="text" id="taskAddInput" class="task-input"
+                 placeholder="Новая задача: завтра 09:00 обряд #ритуал" maxlength="200"
+                 aria-label="Новая задача">
           <button type="submit" class="btn btn-add" aria-label="Добавить">+</button>
         </form>
-        <p class="hint">Умный ввод: дата, время, #тег, !приоритет</p>
       </div>
 
       <div class="toolbar">
@@ -116,16 +124,16 @@
     <!-- ============ ПРИВЫЧКИ ============ -->
     <section class="view" id="view-habits" role="tabpanel" aria-label="Привычки" hidden>
       <div class="panel">
-        <form id="habitForm" class="add-form">
-          <input type="text" id="habitInput" class="task-input" placeholder="Новая привычка..." autocomplete="off" maxlength="60" aria-label="Новая привычка">
+        <form id="habitForm" class="add-form" autocomplete="off">
+          <input type="text" id="habitInput" class="task-input" placeholder="Новая привычка..." maxlength="60" aria-label="Новая привычка">
           <button type="submit" class="btn btn-add" aria-label="Добавить">+</button>
         </form>
         <label class="check-row">
-          <input type="checkbox" id="habitGood" checked aria-label="Полезная привычка">
-          <span>Полезная (избавляемся от вредной — снять)</span>
+          <input type="checkbox" id="habitGood" checked>
+          <span>Полезная (снять галочку, если избавляемся от вредной)</span>
         </label>
       </div>
-      <div id="habitList"></div>
+      <div id="habitList" class="habit-list"></div>
       <p id="habitEmpty" class="empty">Ни одной привычки. Начни ритуал.</p>
     </section>
 
@@ -133,7 +141,8 @@
     <section class="view" id="view-diary" role="tabpanel" aria-label="Дневник" hidden>
       <div class="panel">
         <h3 class="section-head">Исповедь дня</h3>
-        <textarea id="diaryInput" class="task-input diary-input" rows="5" placeholder="Запиши свои мысли, события, победы..." aria-label="Запись дневника"></textarea>
+        <textarea id="diaryInput" class="task-input diary-input" rows="5" maxlength="4000"
+                  placeholder="Запиши мысли, события, победы..." aria-label="Запись дневника"></textarea>
         <div class="diary-controls">
           <div class="chips" role="group" aria-label="Настроение">
             <button class="chip" data-mood="1" aria-label="Плохо">😞</button>
@@ -145,7 +154,7 @@
         </div>
       </div>
       <h3 class="section-head">Летопись</h3>
-      <div id="diaryList"></div>
+      <div id="diaryList" class="diary-list"></div>
       <p id="diaryEmpty" class="empty">Исповедей пока нет.</p>
     </section>
 
@@ -158,9 +167,9 @@
       <div class="panel pomo-panel">
         <div class="pomo-display" id="pomoDisplay">25:00</div>
         <div class="chips" role="group" aria-label="Интервалы">
-          <button class="chip" data-min="25">25</button>
-          <button class="chip" data-min="50">50</button>
-          <button class="chip" data-min="15">15</button>
+          <button class="chip" data-min="25">25 мин</button>
+          <button class="chip" data-min="50">50 мин</button>
+          <button class="chip" data-min="15">15 мин</button>
         </div>
         <button class="btn btn-ghost pomo-toggle" id="pomoToggle">Старт</button>
       </div>
@@ -187,7 +196,18 @@
         </div>
       </div>
 
-      <button id="resetBtn" class="btn btn-reset">Очистить всё</button>
+      <h3 class="section-head">Проекты</h3>
+      <div class="panel">
+        <form id="projectForm" class="add-form" autocomplete="off">
+          <input type="text" id="projectInput" class="task-input" placeholder="Новый проект..." maxlength="40" aria-label="Новый проект">
+          <input type="text" id="projectIcon" class="task-input icon-input" placeholder="☠" maxlength="2" aria-label="Иконка проекта">
+          <button type="submit" class="btn btn-add" aria-label="Добавить проект">+</button>
+        </form>
+        <div id="projectList" class="project-list"></div>
+        <p id="projectEmpty" class="empty" hidden>Нет проектов.</p>
+      </div>
+
+      <button id="resetBtn" class="btn btn-reset">Сбросить оформление</button>
     </section>
   </main>
 
@@ -196,7 +216,6 @@
     <button id="clearDone" class="btn btn-ghost">В архив выполненные</button>
   </footer>
 
-  <!-- bottom navigation -->
   <nav class="tabbar" aria-label="Основная навигация">
     <button class="tab active" data-view="temple" aria-label="Храм">⛩</button>
     <button class="tab" data-view="tasks" aria-label="Задачи">☠</button>
@@ -206,23 +225,67 @@
     <button class="tab" data-view="cult" aria-label="Настройки">⚙</button>
   </nav>
 
-  <!-- modal -->
   <div class="modal" id="modal" hidden>
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <div class="modal-head"><h3 id="modalTitle">Задача</h3><button class="btn btn-ghost" id="modalClose" aria-label="Закрыть">✕</button></div>
-      <div id="modalBody"></div>
+      <div class="modal-head">
+        <h3 id="modalTitle">Задача</h3>
+        <button class="btn btn-ghost" data-action="modal-close" aria-label="Закрыть">✕</button>
+      </div>
+      <label class="field"><span>Название</span>
+        <input type="text" id="mTitle" class="task-input" maxlength="200">
+      </label>
+      <label class="field"><span>Проект</span>
+        <select id="mProject" class="task-input"></select>
+      </label>
+      <div class="modal-row">
+        <label class="field"><span>Дата</span><input type="date" id="mDue" class="task-input"></label>
+        <label class="field"><span>Время</span><input type="time" id="mTime" class="task-input"></label>
+      </div>
+      <label class="field"><span>Заметка</span>
+        <textarea id="mNote" class="task-input" rows="3" maxlength="4000"></textarea>
+      </label>
+      <div class="modal-row">
+        <button class="btn btn-ghost" data-action="modal-priority">Приоритет: 0</button>
+        <button class="btn btn-ghost" data-action="modal-important">Важно: нет</button>
+      </div>
+      <div class="modal-row">
+        <button class="btn btn-ghost" data-action="modal-subtask">+ Подзадача</button>
+        <button class="btn btn-ghost" data-action="modal-done">Выполнено</button>
+      </div>
+      <div class="modal-row">
+        <button class="btn btn-ghost" data-action="modal-archive">В архив</button>
+        <button class="btn btn-danger" data-action="modal-delete">Удалить</button>
+      </div>
     </div>
   </div>
 
+  <template id="tpl-task">
+    <li class="task" data-action="task-open">
+      <button class="task-toggle" data-action="task-toggle" aria-label="Выполнить"></button>
+      <div class="task-body">
+        <div class="task-title"></div>
+        <div class="task-meta"></div>
+      </div>
+      <button class="task-del" data-action="task-del" aria-label="Удалить">✕</button>
+    </li>
+  </template>
+
+  <template id="tpl-habit">
+    <div class="habit-card">
+      <div class="habit-head">
+        <div class="habit-name"></div>
+        <div class="habit-pct"></div>
+        <button class="habit-del" data-action="habit-del" aria-label="Удалить привычку">✕</button>
+      </div>
+      <div class="habit-days"></div>
+    </div>
+  </template>
+
+  <noscript>
+    <p class="empty">Для работы приложения включите JavaScript.</p>
+  </noscript>
+
   <script defer src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script>
-    setTimeout(function () {
-      if (!window.__booted) {
-        var el = document.getElementById("bootFail");
-        if (el) el.hidden = false;
-      }
-    }, 10000);
-  </script>
-  <script defer src="app.js?v=8"></script>
+  <script defer src="app.js?v=9"></script>
 </body>
 </html>
